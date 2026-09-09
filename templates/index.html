@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Sentinel-2 remote sensing and NDVI analysis tool.">
+  <title>Sentinel-2 Remote Sensing</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="#top" aria-label="Sentinel-2 Remote Sensing home">
+      <span class="brand-mark">S2</span>
+      <span class="brand-text">
+        <strong>Sentinel-2 Remote Sensing</strong>
+        <span>Query-driven vegetation analysis from open Earth-observation data</span>
+      </span>
+    </a>
+    <div class="header-meta" aria-label="Data sources">
+      <span>Sentinel-2 L2A</span>
+      <span class="dot">•</span>
+      <span>Planetary Computer</span>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero-copy">
+      <span class="section-kicker">EARTH OBSERVATION · NDVI</span>
+      <h1 id="hero-title">Explore Earth through satellite data.</h1>
+      <p>Describe a location in plain language and turn open Sentinel-2 observations into a vegetation analysis.</p>
+      <button type="button" id="hero-cta" class="cta-button">Start an analysis <span aria-hidden="true">↓</span></button>
+    </div>
+    <div class="hero-specs" aria-label="Application capabilities">
+      <div><strong>Sentinel-2</strong><span>Multispectral imagery</span></div>
+      <div><strong>AOI</strong><span>Location-based processing</span></div>
+      <div><strong>NDVI</strong><span>Vegetation assessment</span></div>
+    </div>
+  </section>
+
+  <section class="query-panel" id="query-section" aria-labelledby="query-title">
+    <div class="section-heading">
+      <div>
+        <span class="section-kicker">ANALYSIS</span>
+        <h2 id="query-title">Describe what you want to analyze</h2>
+      </div>
+      <span class="support-badge">Currently available · Vegetation / NDVI</span>
+    </div>
+
+    <form id="query-form" autocomplete="off">
+      <div class="input-row">
+        <label class="sr-only" for="query-input">Geographic analysis query</label>
+        <div class="query-input-wrap">
+          <span class="query-icon" aria-hidden="true">⌕</span>
+          <input id="query-input" type="text" name="query" placeholder="vegetation near Cuttack" spellcheck="false">
+        </div>
+        <button type="submit" id="analyze-button">
+          <span class="btn-label">Analyze</span>
+          <span class="btn-spinner" aria-hidden="true"></span>
+        </button>
+      </div>
+    </form>
+
+    <div class="examples">
+      <span class="examples-label">Try an example</span>
+      <button class="example-chip" type="button">vegetation near Cuttack</button>
+      <button class="example-chip" type="button">vegetation near Bengaluru</button>
+      <button class="example-chip" type="button">vegetation around Vijayawada</button>
+      <button class="example-chip" type="button">vegetation in Hyderabad</button>
+    </div>
+  </section>
+
+  <section id="status-panel" class="status-panel hidden" aria-live="polite">
+    <div class="spinner" aria-hidden="true"></div>
+    <div class="status-body">
+      <p class="status-headline">Processing satellite data<span class="loading-dots">...</span></p>
+      <ul id="status-steps" class="status-steps">
+        <li data-step="0">Searching Sentinel-2 imagery</li>
+        <li data-step="1">Preparing satellite data</li>
+        <li data-step="2">Calculating NDVI</li>
+        <li data-step="3">Preparing visualizations</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="error-panel" class="error-panel hidden" aria-live="assertive">
+    <span class="error-mark">!</span>
+    <p id="error-message"></p>
+  </section>
+
+  <section id="results" class="results hidden" aria-labelledby="results-title">
+    <div class="result-header">
+      <div>
+        <span class="section-kicker">ANALYSIS RESULT</span>
+        <h2 id="res-title">—</h2>
+        <p id="res-subline" class="result-subline">—</p>
+      </div>
+      <button type="button" id="new-analysis-button" class="ghost-button">← New analysis</button>
+    </div>
+
+    <div class="result-overview">
+      <div class="panel overview-panel">
+        <div class="panel-heading">
+          <div>
+            <span class="mini-label">SELECTED OBSERVATION</span>
+            <h3>Sentinel-2 scene</h3>
+          </div>
+          <span class="scene-dot" aria-hidden="true"></span>
+        </div>
+        <div class="overview-grid">
+          <div><span>Acquisition</span><strong id="overview-date">—</strong></div>
+          <div><span>Cloud cover</span><strong id="overview-cloud">—</strong></div>
+          <div class="wide"><span>Scene ID</span><strong id="overview-scene">—</strong></div>
+        </div>
+      </div>
+
+      <div class="panel location-panel">
+        <div class="panel-heading">
+          <div>
+            <span class="mini-label">AREA OF INTEREST</span>
+            <h3 id="overview-location">—</h3>
+          </div>
+          <span class="coordinate-badge" id="overview-coordinates">—</span>
+        </div>
+        <p id="overview-address">—</p>
+      </div>
+    </div>
+
+    <div class="panel stats-panel">
+      <div class="panel-heading stats-heading">
+        <div>
+          <span class="mini-label">VEGETATION INDEX</span>
+          <h3>NDVI statistics</h3>
+        </div>
+        <span class="formula">(NIR − Red) / (NIR + Red)</span>
+      </div>
+      <div class="stats-row">
+        <div class="stat"><span class="stat-label">Minimum</span><strong class="stat-value" id="stat-min">—</strong></div>
+        <div class="stat featured"><span class="stat-label">Mean</span><strong class="stat-value" id="stat-mean">—</strong></div>
+        <div class="stat"><span class="stat-label">Maximum</span><strong class="stat-value" id="stat-max">—</strong></div>
+      </div>
+      <p class="stats-note">NDVI ranges from −1 to +1. Higher positive values generally indicate stronger vegetation response.</p>
+    </div>
+
+    <div class="image-grid">
+      <figure class="image-panel">
+        <div class="image-panel-header">
+          <div><span class="mini-label">TRUE COLOR</span><figcaption>Sentinel-2 RGB image</figcaption></div>
+          <span class="image-badge">B04 / B03 / B02</span>
+        </div>
+        <button type="button" class="image-frame" data-open-image="rgb-image" aria-label="Open Sentinel-2 RGB image in viewer">
+          <img id="rgb-image" alt="Sentinel-2 true-color RGB image with AOI boundary">
+          <span class="image-overlay-hint">Click to inspect</span>
+        </button>
+        <p class="image-note">True-color composite with the analysis AOI outlined.</p>
+        <div class="image-actions">
+          <button type="button" class="secondary-button" data-viewer-target="rgb-image">Open viewer</button>
+          <button type="button" class="secondary-button" data-download-target="rgb-image" data-download-name="sentinel2-rgb.png">Download PNG</button>
+        </div>
+      </figure>
+
+      <figure class="image-panel">
+        <div class="image-panel-header">
+          <div><span class="mini-label">VEGETATION INDEX</span><figcaption>NDVI map</figcaption></div>
+          <span class="image-badge">−1 → +1</span>
+        </div>
+        <button type="button" class="image-frame" data-open-image="ndvi-image" aria-label="Open NDVI map in viewer">
+          <img id="ndvi-image" alt="NDVI map with AOI boundary and color scale">
+          <span class="image-overlay-hint">Click to inspect</span>
+        </button>
+        <p class="image-note">Red/NIR vegetation index with cloud and invalid pixels masked.</p>
+        <div class="image-actions">
+          <button type="button" class="secondary-button" data-viewer-target="ndvi-image">Open viewer</button>
+          <button type="button" class="secondary-button" data-download-target="ndvi-image" data-download-name="ndvi-map.png">Download PNG</button>
+        </div>
+      </figure>
+    </div>
+
+    <div class="details-grid">
+      <div class="panel map-panel">
+        <div class="panel-heading"><div><span class="mini-label">GEOGRAPHY</span><h3>Location &amp; AOI</h3></div></div>
+        <div id="map"></div>
+      </div>
+
+      <div class="panel info-panel">
+        <div class="panel-heading"><div><span class="mini-label">METADATA</span><h3>Analysis details</h3></div></div>
+        <dl class="info-list">
+          <div><dt>Location</dt><dd id="res-location"></dd></div>
+          <div><dt>Address</dt><dd id="res-address"></dd></div>
+          <div><dt>Latitude</dt><dd id="res-lat"></dd></div>
+          <div><dt>Longitude</dt><dd id="res-lon"></dd></div>
+          <div><dt>AOI (W, S, E, N)</dt><dd id="res-aoi"></dd></div>
+          <div><dt>Satellite</dt><dd>Sentinel-2 L2A</dd></div>
+          <div><dt>Scene ID</dt><dd id="res-scene"></dd></div>
+          <div><dt>Acquisition date</dt><dd id="res-date"></dd></div>
+          <div><dt>Cloud cover</dt><dd id="res-cloud"></dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="viewer-overlay" class="viewer-overlay hidden" aria-hidden="true">
+  <div class="viewer-dialog" role="dialog" aria-modal="true" aria-labelledby="viewer-title">
+    <div class="viewer-toolbar">
+      <div class="viewer-heading">
+        <span class="mini-label">IMAGE VIEWER</span>
+        <strong id="viewer-title">Satellite image</strong>
+      </div>
+      <div class="viewer-actions">
+        <button type="button" id="viewer-zoom-out" title="Zoom out">−</button>
+        <button type="button" id="viewer-zoom-reset" title="Reset zoom">100%</button>
+        <button type="button" id="viewer-zoom-in" title="Zoom in">+</button>
+        <button type="button" id="viewer-fullscreen" title="Fullscreen">Fullscreen</button>
+        <button type="button" id="viewer-download" title="Download PNG">Download</button>
+        <button type="button" id="viewer-close" class="close-button" title="Close viewer">Close</button>
+      </div>
+    </div>
+    <div class="viewer-stage" id="viewer-stage">
+      <img id="viewer-image" alt="">
+    </div>
+    <div class="viewer-footer"><span>Scroll to zoom</span><span>Drag to pan when zoomed</span><span>Esc to close</span></div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <p>Satellite imagery: Copernicus Sentinel-2 L2A · Data access: Microsoft Planetary Computer · Geocoding: OpenStreetMap / Nominatim</p>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

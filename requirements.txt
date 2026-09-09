@@ -1,0 +1,10 @@
+geopy
+matplotlib
+contextily
+shapely
+geopandas
+pystac-client
+planetary-computer
+rasterio
+numpy
+flask
