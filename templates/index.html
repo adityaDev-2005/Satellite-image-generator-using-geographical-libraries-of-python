@@ -151,6 +151,63 @@
       <p class="stats-note">NDVI ranges from −1 to +1. Higher positive values generally indicate stronger vegetation response.</p>
     </div>
 
+        <div class="panel interpretation-panel">
+      <div class="panel-heading">
+        <div>
+          <span class="mini-label">UNDERSTANDING NDVI</span>
+          <h3>What does NDVI mean?</h3>
+        </div>
+        <span class="assessment-badge">RED / NIR</span>
+      </div>
+
+      <div class="assessment-body">
+        <p class="assessment-explanation">
+          NDVI (Normalized Difference Vegetation Index) uses the Red and
+          Near-Infrared bands from Sentinel-2 to indicate the relative presence
+          of vegetation. Values generally range from −1 to +1, with higher
+          positive values usually indicating a stronger vegetation response.
+        </p>
+
+        <div class="ndvi-guide">
+          <div>
+            <strong>Higher positive values</strong>
+            <span>Generally indicate denser vegetation.</span>
+          </div>
+
+          <div>
+            <strong>Moderate values</strong>
+            <span>May indicate sparse or mixed vegetation.</span>
+          </div>
+
+          <div>
+            <strong>Low or negative values</strong>
+            <span>May correspond to water, bare land, buildings, or other non-vegetated surfaces.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel interpretation-panel">
+      <div class="panel-heading">
+        <div>
+          <span class="mini-label">QUICK INTERPRETATION</span>
+          <h3 id="assessment-title">Vegetation signal</h3>
+        </div>
+        <span class="assessment-badge" id="assessment-badge">—</span>
+      </div>
+
+      <div class="assessment-body">
+        <p id="assessment-summary">—</p>
+
+        <p class="assessment-explanation">
+          This is an NDVI-based vegetation signal for the selected area and
+          observation. It should be interpreted together with the imagery,
+          acquisition date, and data quality; it is not a direct measurement
+          of crop health, yield, or biomass.
+        </p>
+      </div>
+    </div>
+
     <div class="image-grid">
       <figure class="image-panel">
         <div class="image-panel-header">
