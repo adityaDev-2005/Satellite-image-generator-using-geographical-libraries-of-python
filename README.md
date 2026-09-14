@@ -108,6 +108,7 @@ Landing Page :
 
 <img width="1915" height="919" alt="image" src="https://github.com/user-attachments/assets/205f59a3-2211-465e-81cf-78f98b751019" />
 
+
 Enter the query and click "Analyze" :
 
 <img width="1263" height="609" alt="image" src="https://github.com/user-attachments/assets/f4a944c4-c610-4e27-81e5-3e9261af9ddd" />
@@ -117,6 +118,8 @@ Enter the query and click "Analyze" :
 We will be getting the satellite image of the place according to the AOI (Area of Interest) and then also the NDVI image showing the focused vegetation area : 
 
 <img width="888" height="770" alt="image" src="https://github.com/user-attachments/assets/7b58a5f0-da22-4304-9a3d-fe2360084cd3" />
+
+We can even "Zoom In" and "Zoom Out" the images and can also download them.
 
 
 
