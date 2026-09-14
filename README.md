@@ -287,25 +287,39 @@ Project Structure
 Satellite-image-generator-using-geographical-libraries-of-python/
 │
 ├── app.py
+
 ├── analysis.py
+
 ├── aoi.py
+
 ├── catalog.py
+
 ├── geocoding.py
+
 ├── imagery.py
+
 ├── query_parser.py
+
 ├── visualization.py
+
 ├── web_app.py
 │
 ├── static/
+
 │   ├── script.js
+
 │   └── style.css
 │
 ├── templates/
+
 │   └── index.html
 │
 ├── requirements.txt
+
 ├── .gitignore
+
 ├── .python-version
+
 └── README.md
 
 Main Modules
