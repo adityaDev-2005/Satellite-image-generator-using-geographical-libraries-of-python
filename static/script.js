@@ -80,6 +80,48 @@ function formatDateLong(isoString) {
   });
 }
 
+function interpretNdvi(meanNdvi) {
+  if (!Number.isFinite(meanNdvi)) {
+    return {
+      label: "Unavailable",
+      summary: "A vegetation assessment could not be determined from the available NDVI statistics."
+    };
+  }
+
+  if (meanNdvi < 0) {
+    return {
+      label: "Very low",
+      summary: "The area shows a very low vegetation signal overall, with the mean NDVI below zero."
+    };
+  }
+
+  if (meanNdvi < 0.2) {
+    return {
+      label: "Low",
+      summary: "The area shows a low vegetation signal overall, with the mean NDVI close to the lower end of the vegetation range."
+    };
+  }
+
+  if (meanNdvi < 0.4) {
+    return {
+      label: "Moderate",
+      summary: "The area shows a moderate vegetation signal overall. The AOI likely contains a mixture of vegetation and less-vegetated surfaces."
+    };
+  }
+
+  if (meanNdvi < 0.6) {
+    return {
+      label: "Strong",
+      summary: "The area shows a strong vegetation signal overall, with the mean NDVI indicating substantial vegetation response."
+    };
+  }
+
+  return {
+    label: "Very strong",
+    summary: "The area shows a very strong vegetation signal overall, with a high mean NDVI."
+  };
+}
+
 function primaryPlaceName(location, address) {
   if (address) {
     const firstPart = address.split(",")[0].trim();
@@ -112,9 +154,15 @@ function renderResults(data) {
   document.getElementById("res-date").textContent = formatDateLong(data.acquisition_date);
   document.getElementById("res-cloud").textContent = `${Number(data.cloud_cover).toFixed(1)}%`;
 
+  const ndviMean = Number(data.ndvi_statistics.mean);
   document.getElementById("stat-min").textContent = Number(data.ndvi_statistics.min).toFixed(3);
-  document.getElementById("stat-mean").textContent = Number(data.ndvi_statistics.mean).toFixed(3);
+  document.getElementById("stat-mean").textContent = ndviMean.toFixed(3);
   document.getElementById("stat-max").textContent = Number(data.ndvi_statistics.max).toFixed(3);
+
+  const assessment = interpretNdvi(ndviMean);
+  document.getElementById("assessment-title").textContent = `${assessment.label} vegetation signal`;
+  document.getElementById("assessment-badge").textContent = `Mean NDVI ${ndviMean.toFixed(3)}`;
+  document.getElementById("assessment-summary").textContent = assessment.summary;
 
   document.getElementById("rgb-image").src = data.rgb_image;
   document.getElementById("ndvi-image").src = data.ndvi_image;
