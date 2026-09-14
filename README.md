@@ -1,14 +1,19 @@
-🛰️ Satellite Image Generator & EO Analysis Tool
+#🛰️ Satellite Image Generator & EO Analysis Tool#
 
 A Python-based Earth Observation (EO) tool that takes a natural-language place query, resolves it to an Area of Interest (AOI), fetches real satellite imagery via the Sentinel-2 STAC catalog, and generates true-color RGB visualizations and NDVI (vegetation index) analysis — all served through a Flask web dashboard.
 
 Features
 
 🔍 Natural-language query parsing — e.g. "vegetation near Vijayawada"
+
 📍 Geocoding — place name → latitude/longitude → AOI bounding box
+
 🛰️ Sentinel-2 STAC catalog search — finds and selects the best matching satellite scene
+
 🎨 True-color RGB visualization — with AOI bounding box overlay
+
 🌱 NDVI (vegetation index) analysis — with statistics and metadata
+
 🌐 Web dashboard — dark EO-styled UI with an interactive Leaflet map, zoomable/pannable image viewer, and downloadable results
 
 Project Structure
